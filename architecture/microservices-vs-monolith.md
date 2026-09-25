@@ -1,11 +1,14 @@
-# Why We Refused to Split into Microservices
+# Why We Completely Abandoned Our Modular Monolith
 
-## The Microservices Fallacy for Early Products
-Most teams don't have a scalability problem; they have an organizational discipline problem.
-- Splitting a 15,000-line codebase into 6 microservices when you have 4 engineers is self-sabotage. You trade simple in-memory function calls for distributed network latency, gRPC serialization overhead, and partial failure states.
-- A modular monolith with clear folder boundaries and strict dependency rules gives you 90% of the isolation benefits with 0% of the DevOps nightmare.
+## The Distributed Monolith Trap
+I used to advocate for modular monoliths, but at our current scale, they became our biggest operational bottleneck.
+- What starts as clean module boundaries inevitably degrades into spaghetti imports. Junior engineers bypass domain boundaries with direct DB queries, turning the codebase into a ticking time bomb.
+- A single unoptimized GraphQL query or memory leak in our analytics module was repeatedly taking down the primary payment checkout engine. Shared memory space is a false economy.
 
-## When Splitting Actually Makes Sense
-I only consider decoupling a service if at least one of these two conditions is met:
-1. **Dramatically asymmetrical scaling requirements:** E.g., an AI vector-embedding worker or PDF renderer that consumes 10x the CPU/RAM of the CRUD API.
-2. **Autonomous deployment teams:** When multiple independent teams are stepping on each other’s git branches and blocking deployments.
+## Our Hard Split Rules for 2026
+We broke the monolith into 3 dedicated decoupled services with strict blast-radius isolation:
+1. **Auth & Identity Core:** Go service, zero external dependencies, 99.99% uptime target.
+2. **Billing Engine:** Isolated Node.js service running in its own VPC with dedicated PostgreSQL instances to ensure PCI compliance.
+3. **Core API & Feed:** Autoscaled separately based on read traffic spikes.
+
+- We enforce communication strictly via gRPC and NATS JetStream events. No shared databases, no direct memory access.
