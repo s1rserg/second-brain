@@ -1,4 +1,4 @@
-# An Approach to High-Protein Cooking and Kitchen Efficiency
+# My Approach to High-Protein Cooking and Kitchen Efficiency
 
 ## Meal Prep Over Daily Cooking
 I refuse to spend 90 minutes every evening cooking dinner after a full day of engineering. Cooking daily from scratch is an operational bottleneck.
